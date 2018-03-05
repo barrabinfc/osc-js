@@ -29,6 +29,7 @@ export default class WebsocketServerPlugin {
    * Create an OSC WebsocketServerPlugin instance with given options.
    * Defaults to *localhost:8080* for the Websocket server
    * @param {object} [options] Custom options
+   * @param {object} [options.server] Express server to use
    * @param {string} [options.host='localhost'] Hostname of Websocket server
    * @param {number} [options.port=8080] Port of Websocket server
    *
@@ -93,15 +94,21 @@ export default class WebsocketServerPlugin {
    */
   open(customOptions = {}) {
     const options = Object.assign({}, this.options, customOptions)
-    const { port, host } = options
+    const { port, host , server } = options
 
     // close socket when already given
     if (this.socket) {
       this.close()
     }
 
-    // create websocket server
-    this.socket = new WebsocketServer({ host, port })
+      // create websocket server
+    if(server){
+      this.socket = new WebsocketServer({ server })      
+    } else {
+      this.socket = new WebsocketServer({ host, port})      
+    }
+
+    // 
     this.socket.binaryType = 'arraybuffer'
     this.socketStatus = STATUS.IS_CONNECTING
 

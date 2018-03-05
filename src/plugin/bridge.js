@@ -151,14 +151,21 @@ export default class BridgePlugin {
       exclusive: options.udpServer.exclusive,
     }, () => {
   
+      /*
+       * use instance wsServer.server for websocket
+       */
       let wsopt = { host: options.wsServer.host, port: options.wsServer.port }
       if(options.wsServer.server) {
-        wsopt.server = options.wsServer.server
+        //console.log("http server")
+        this.websocket = new WebsocketServer({server: options.wsServer.server})
+        //wsopt.server = options.wsServer.server
+      } else {
+        //console.log("no server..")
+        // bind Websocket server
+        this.websocket = new WebsocketServer(wsopt)
       }
 
-        // bind Websocket server
-      this.websocket = new WebsocketServer(wsopt)
-      this.websocket.binaryType = 'arraybuffer'
+      //this.websocket.binaryType = 'arraybuffer'
 
       // register Websocket events
       this.websocket.on('listening', () => {
